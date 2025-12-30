@@ -1,8 +1,133 @@
-<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Jupyter Notebook - Notebook</title><link rel="icon" type="image/x-icon" href="/static/favicons/favicon-notebook.ico" class="favicon"/> <link rel="stylesheet" href="/custom/custom.css"/><script defer="defer" src="/static/notebook/main.407246dd27aed8010549.js?v=407246dd27aed8010549"></script></head><body class="jp-ThemedContainer" data-notebook="notebooks">     <script id="jupyter-config-data" type="application/json">{"allow_hidden_files": false, "appName": "Jupyter Notebook", "appNamespace": "notebook", "appSettingsDir": "/opt/anaconda3/share/jupyter/lab/settings", "appUrl": "/lab", "appVersion": "7.3.2", "baseUrl": "/", "buildAvailable": true, "buildCheck": true, "cacheFiles": true, "copyAbsolutePath": false, "devMode": false, "disabledExtensions": [], "exposeAppInBrowser": false, "extensionManager": {"can_install": true, "install_path": "/opt/anaconda3", "name": "PyPI"}, "extraLabextensionsPath": [], "federated_extensions": [{"entrypoints": null, "extension": "./extension", "load": "static/remoteEntry.5cbb9d2323598fbda535.js", "name": "jupyterlab_pygments", "style": "./style"}, {"entrypoints": null, "extension": "./extension", "load": "static/remoteEntry.c6c768d682b3638efd6b.js", "mimeExtension": "./mimeExtension", "name": "jupyterlab-plotly"}, {"entrypoints": null, "extension": "./extension", "load": "static/remoteEntry.c8393541423362724be3.js", "name": "@pyviz/jupyterlab_pyviz", "style": "./style"}, {"entrypoints": null, "extension": "./extension", "load": "static/remoteEntry.f4a64e687ab347206c17.js", "name": "@lckr/jupyterlab_variableinspector", "style": "./style"}, {"entrypoints": null, "extension": "./extension", "load": "static/remoteEntry.cad89c571bc2aee4aff2.js", "name": "@jupyter-notebook/lab-extension", "style": "./style"}, {"entrypoints": null, "extension": "./extension", "load": "static/remoteEntry.e4ff09401a2f575928c0.js", "name": "@jupyter-widgets/jupyterlab-manager"}], "frontendUrl": "/", "fullAppUrl": "/lab", "fullLabextensionsUrl": "/lab/extensions", "fullLicensesUrl": "/lab/api/licenses", "fullListingsUrl": "/lab/api/listings", "fullMathjaxUrl": "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js", "fullSettingsUrl": "/lab/api/settings", "fullStaticUrl": "/static/notebook", "fullThemesUrl": "/lab/api/themes", "fullTranslationsApiUrl": "/lab/api/translations", "fullTreeUrl": "/lab/tree", "fullWorkspacesApiUrl": "/lab/api/workspaces", "jupyterConfigDir": "/Users/indhetijaganmohan/.jupyter", "labextensionsPath": ["/Users/indhetijaganmohan/Library/Jupyter/labextensions", "/Users/indhetijaganmohan/.local/share/jupyter/labextensions", "/opt/anaconda3/share/jupyter/labextensions", "/usr/local/share/jupyter/labextensions", "/usr/share/jupyter/labextensions"], "labextensionsUrl": "/lab/extensions", "licensesUrl": "/lab/api/licenses", "listingsUrl": "/lab/api/listings", "mathjaxConfig": "TeX-AMS_HTML-full,Safe", "nbclassic_enabled": false, "news": {"disabled": false}, "notebookPage": "notebooks", "notebookStartsKernel": true, "notebookVersion": "[2, 15, 0]", "preferredPath": "/", "quitButton": true, "rootUri": "file:///Users/indhetijaganmohan", "schemasDir": "/opt/anaconda3/share/jupyter/lab/schemas", "settingsUrl": "/lab/api/settings", "staticDir": "/opt/anaconda3/lib/python3.13/site-packages/notebook/static", "templatesDir": "/opt/anaconda3/lib/python3.13/site-packages/notebook/templates", "terminalsAvailable": true, "themesDir": "/opt/anaconda3/share/jupyter/lab/themes", "themesUrl": "/lab/api/themes", "token": "783d783ee83e7e906190dbe4d720bf598ab18ce922a62e80", "translationsApiUrl": "/lab/api/translations", "treeUrl": "/lab/tree", "userSettingsDir": "/Users/indhetijaganmohan/.jupyter/lab/user-settings", "virtualDocumentsUri": "file:///Users/indhetijaganmohan/.virtual_documents", "workspacesApiUrl": "/lab/api/workspaces", "workspacesDir": "/Users/indhetijaganmohan/.jupyter/lab/workspaces", "wsUrl": ""}</script><script>/* Remove token from URL. */
-      (function () {
-        var parsedUrl = new URL(window.location.href);
-        if (parsedUrl.searchParams.get('token')) {
-          parsedUrl.searchParams.delete('token');
-          window.history.replaceState({}, '', parsedUrl.href);
-        }
-      })();</script></body></html>
+import json
+import os 
+
+FILE_NAME = "tickets.json"
+
+
+# Initialize JSON file
+def initialize_file():
+    if not os.path.exists(FILE_NAME):
+        with open(FILE_NAME, "w") as file:
+            json.dump([], file)
+
+
+# Load tickets from JSON
+def load_tickets():
+    with open(FILE_NAME, "r") as file:
+        return json.load(file)
+
+
+# Save tickets to JSON
+def save_tickets(tickets):
+    with open(FILE_NAME, "w") as file:
+        json.dump(tickets, file, indent=4)
+
+
+# Generate next ticket ID
+def get_next_ticket_id(tickets):
+    if not tickets:
+        return 1
+    return max(ticket["ticket_id"] for ticket in tickets) + 1
+
+
+# Create a ticket
+def create_ticket():
+    tickets = load_tickets()
+    ticket_id = get_next_ticket_id(tickets)
+
+    customer = input("Customer Name: ")
+    email=input("enter your email:")
+    issue = input("Issue Description: ")
+
+    ticket = {
+        "ticket_id": ticket_id,
+        "customer_name": customer,
+        "issue": issue,
+        "status": "Open",
+        "assigned_to": "Not Assigned"
+    }
+
+    tickets.append(ticket)
+    save_tickets(tickets)
+    print("✅ Ticket created successfully!")
+
+
+# View all tickets
+def view_tickets():
+    tickets = load_tickets()
+    if not tickets:
+        print("No tickets available.")
+        return
+
+    for ticket in tickets:
+        print("-" * 40)
+        for key, value in ticket.items():
+            print(f"{key}: {value}")
+
+
+# Update a ticket
+def update_ticket():
+    tickets = load_tickets()
+    ticket_id = int(input("Enter Ticket ID: "))
+
+    for ticket in tickets:
+        if ticket["ticket_id"] == ticket_id:
+            ticket["status"] = input("New Status (Open/In Progress/Closed): ")
+            ticket["assigned_to"] = input("Assign to Agent: ")
+            save_tickets(tickets)
+            print("✅ Ticket updated successfully!")
+            return
+
+    print("❌ Ticket not found.")
+
+
+# Close a ticket
+def close_ticket():
+    tickets = load_tickets()
+    ticket_id = int(input("Enter Ticket ID to close: "))
+
+    for ticket in tickets:
+        if ticket["ticket_id"] == ticket_id:
+            ticket["status"] = "Closed"
+            save_tickets(tickets)
+            print("✅ Ticket closed successfully!")
+            return
+
+    print("❌ Ticket not found.")
+
+
+# Menu
+def menu():
+    print("\nCustomer Support Ticket System")
+    print("1. Create Ticket")
+    print("2. View Tickets")
+    print("3. Update Ticket")
+    print("4. Close Ticket")
+    print("5. Exit")
+
+
+# Main program
+def main():
+    initialize_file()
+
+    while True:
+        menu()
+        choice = input("Choose an option: ")
+
+        if choice == "1":
+            create_ticket()
+        elif choice == "2":
+            view_tickets()
+        elif choice == "3":
+            update_ticket()
+        elif choice == "4":
+            close_ticket()
+        elif choice == "5":
+            print("Goodbye")
+            break
+        else:
+            print("Invalid choice.")
+
+
+if __name__ == "__main__":
+    main()
